@@ -63,11 +63,25 @@ def upload_csv():
         if not file.filename.endswith('.csv'):
             return jsonify({"error": "Only CSV files are allowed"}), 400
 
-        # Upload to Azure Blob Storage
         blob_client = container_client_csv.get_blob_client(file.filename)
         blob_client.upload_blob(file.read(), overwrite=True)
 
         return jsonify({"message": f"File {file.filename} uploaded successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/csv/delete/<filename>', methods=['DELETE'])
+def delete_csv(filename):
+    """Delete a CSV file from Azure Blob Storage."""
+    try:
+        blob_client = container_client_csv.get_blob_client(filename)
+        if not blob_client.exists():
+            return jsonify({"error": f"File {filename} not found"}), 404
+
+        blob_client.delete_blob()
+
+        return jsonify({"message": f"File {filename} deleted successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
