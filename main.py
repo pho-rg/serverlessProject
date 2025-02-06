@@ -3,7 +3,10 @@ from flask_cors import CORS
 from azure.storage.blob import BlobServiceClient
 import os
 import json
-from dotenv import load_dotenv
+from dotenv import dotenv_values
+
+
+config = dotenv_values(".env")
 
 # Flask app setup
 app = Flask(__name__)
