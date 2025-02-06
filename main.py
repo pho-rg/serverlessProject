@@ -20,32 +20,10 @@ blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CON
 container_client = blob_service_client.get_container_client(CONTAINER_NAME)
 container_client_csv = blob_service_client.get_container_client(CONTAINER_CSV)
 
-# Endpoint to list available JSON files in the container
-@app.route('/files', methods=['GET'])
-def list_json_files():
-    """Fetch the list of JSON files in the Azure container."""
-    blob_list = container_client.list_blobs()
-    json_files = [blob.name for blob in blob_list if blob.name.endswith('.json')]
-    return jsonify(json_files)
-
-# Endpoint to retrieve JSON content
-@app.route('/file/<filename>', methods=['GET'])
-def get_json_file(filename):
-    """Fetch JSON content from the specified file in Azure Blob Storage."""
-    try:
-        blob_client = container_client.get_blob_client(filename)
-        json_data = blob_client.download_blob().readall()
-        return jsonify(json.loads(json_data))
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-# Endpoint to list available CSV files in the container
-@app.route('/csv/files', methods=['GET'])
-def list_csv_files():
-    """Fetch the list of CSV files in the Azure container."""
-    blob_csv_list = container_client_csv.list_blobs()
-    csv_files = [blob.name for blob in blob_csv_list if blob.name.endswith('.csv')]
-    return jsonify(csv_files)
+# root endpoint
+@app.route('/')
+def hello():
+    return "CSVitesse"
 
 # Endpoint to push CSV file
 @app.route('/csv/upload', methods=['POST'])
@@ -71,6 +49,15 @@ def upload_csv():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Endpoint to list available CSV files in the container
+@app.route('/csv/files', methods=['GET'])
+def list_csv_files():
+    """Fetch the list of CSV files in the Azure container."""
+    blob_csv_list = container_client_csv.list_blobs()
+    csv_files = [blob.name for blob in blob_csv_list if blob.name.endswith('.csv')]
+    return jsonify(csv_files)
+
+# Endpoint to delete a CSV file in the container
 @app.route('/csv/delete/<filename>', methods=['DELETE'])
 def delete_csv(filename):
     """Delete a CSV file from Azure Blob Storage."""
@@ -83,6 +70,25 @@ def delete_csv(filename):
 
         return jsonify({"message": f"File {filename} deleted successfully"}), 200
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Endpoint to list available JSON files in the container
+@app.route('/files', methods=['GET'])
+def list_json_files():
+    """Fetch the list of JSON files in the Azure container."""
+    blob_list = container_client.list_blobs()
+    json_files = [blob.name for blob in blob_list if blob.name.endswith('.json')]
+    return jsonify(json_files)
+
+# Endpoint to retrieve JSON content
+@app.route('/file/<filename>', methods=['GET'])
+def get_json_file(filename):
+    """Fetch JSON content from the specified file in Azure Blob Storage."""
+    try:
+        blob_client = container_client.get_blob_client(filename)
+        json_data = blob_client.download_blob().readall()
+        return jsonify(json.loads(json_data))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
