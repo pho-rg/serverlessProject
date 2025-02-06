@@ -74,5 +74,5 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CAD0936EBF2C4651A9F356021234965D }}
 
-      - name: Start Gunicorn
-        run: gunicorn --bind 0.0.0.0:8000 main:app
+      #- name: Start Gunicorn
+      #  run: gunicorn --bind 0.0.0.0:8000 main:app
